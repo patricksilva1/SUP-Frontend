@@ -21,24 +21,71 @@ class App extends React.Component {
     });
   };
 
-  handleSearch = () => {
-    const { startDate, endDate, operatorName } = this.state;
 
+  handleSearch = () => {
+    const { startDate, endDate } = this.state;
+  
     // Fazer a solicitação para a API de backend
-    axios.get('http://localhost:9093/api/v1', {
-      params: {
-        startDate,
-        endDate,
-        operatorName
-      }
-    })
-      .then(response => {
-        // Manipular a resposta do backend aqui
-        const tabelaValores = response.data; // Supondo que a resposta é um JSON com os valores da tabela correspondentes aos filtros
-        console.log(tabelaValores);
-        // Use os valores da tabela conforme necessário
+    axios
+      .get('http://localhost:8080/api/v1/transfers/periodo', {
+        params: {
+          dataInicio: startDate,
+          dataFim: endDate,
+        },
       })
-      .catch(error => {
+      .then((response) => {
+        // Manipular a resposta do backend aqui
+        const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+        console.log(transferencias);
+        // Use os dados das transferências conforme necessário
+      })
+      .catch((error) => {
+        // Manipular os erros aqui
+        console.error(error);
+      });
+  };
+  
+  handleSearchByOperator = () => {
+    const { operatorName } = this.state;
+  
+    // Fazer a solicitação para a API de backend
+    axios
+      .get('http://localhost:8080/api/v1/transfers/operador', {
+        params: {
+          nomeOperador: operatorName,
+        },
+      })
+      .then((response) => {
+        // Manipular a resposta do backend aqui
+        const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+        console.log(transferencias);
+        // Use os dados das transferências conforme necessário
+      })
+      .catch((error) => {
+        // Manipular os erros aqui
+        console.error(error);
+      });
+  };
+  
+  handleSearchByPeriodAndOperator = () => {
+    const { startDate, endDate, operatorName } = this.state;
+  
+    // Fazer a solicitação para a API de backend
+    axios
+      .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
+        params: {
+          dataInicio: startDate,
+          dataFim: endDate,
+          nomeOperador: operatorName,
+        },
+      })
+      .then((response) => {
+        // Manipular a resposta do backend aqui
+        const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+        console.log(transferencias);
+        // Use os dados das transferências conforme necessário
+      })
+      .catch((error) => {
         // Manipular os erros aqui
         console.error(error);
       });
@@ -89,30 +136,3 @@ class App extends React.Component {
 }
 
 export default App;
-
-
-// import logo from './logo.svg';
-// import './App.css';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default App;import React from 'react';
