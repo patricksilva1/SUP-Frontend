@@ -42,8 +42,45 @@ class App extends React.Component {
     const { startDate, endDate, operatorName } = this.state;
 
     // Fazer a solicitação para a API de backend
+    if (!operatorName && !startDate && !endDate) {
+      axios
+        .get('http://localhost:8080/api/v1/transfers', {
+          params: {
+          
+          },
+        })
+        .then((response) => {
+          // Manipular a resposta do backend aqui
+          const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+          console.log(transferencias);
 
-    if (!operatorName) {
+          // Atualizar o estado com as transferências recebidas
+          this.setState({ transferencias });
+        })
+        .catch((error) => {
+          // Manipular os erros aqui
+          console.error(error);
+        });
+
+          // Obter Saldo no Período por Nome
+          axios
+            .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
+              params: {
+                dataInicio: startDate,
+                dataFim: endDate,
+                nome: operatorName,
+              },
+            })
+            .then((saldoPeriodoResponse) => {
+              const saldoPeriodo = saldoPeriodoResponse.data;
+              console.log(saldoPeriodo);
+              // Atualizar o estado com o saldo do período recebido
+              this.setState({ saldoPeriodo });
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+    } if (!operatorName) {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo', {
           params: {
@@ -61,6 +98,25 @@ class App extends React.Component {
         })
         .catch((error) => {
           // Manipular os erros aqui
+          console.error(error);
+        });
+       
+      // Obter Saldo no Período por Nome
+      axios
+        .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
+          params: {
+            dataInicio: startDate,
+            dataFim: endDate,
+            nome: operatorName,
+          },
+        })
+        .then((saldoPeriodoResponse) => {
+          const saldoPeriodo = saldoPeriodoResponse.data;
+          console.log(saldoPeriodo);
+          // Atualizar o estado com o saldo do período recebido
+          this.setState({ saldoPeriodo });
+        })
+        .catch((error) => {
           console.error(error);
         });
     } else {
@@ -429,7 +485,7 @@ class App extends React.Component {
               </table>
             </div>
 
-            <div className="table-column">
+            {/* <div className="table-column">
               <table className="table table-data-transfer">
                 <thead>
                   <tr>
@@ -444,9 +500,9 @@ class App extends React.Component {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </div> */}
 
-            <div className="table-column">
+            {/* <div className="table-column">
               <table className="table table-data-transfer">
                 <thead>
                   <tr>
@@ -461,13 +517,13 @@ class App extends React.Component {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </div> */}
           </div>
 
           <div className="pagination">
 
-            <button onClick={() => this.handlePageChange(currentPage - 1)}
-              disabled={currentPage === 0}>
+            <button onClick={() => this.handlePageChange(currentPage - 2)}
+              disabled={currentPage <= 1}>
               ⮜⮜
             </button>
 
@@ -482,12 +538,12 @@ class App extends React.Component {
             </p>
 
             <button onClick={() => this.handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages - 1}>
+              disabled={currentPage === totalPages - 1 || totalPages === 0}>
               ➤
             </button>
 
             <button onClick={() => this.handlePageChange(currentPage + 2)}
-              disabled={currentPage === totalPages - 1}>
+              disabled={currentPage >= totalPages - 2}>
               ➤➤
             </button>
           </div>
