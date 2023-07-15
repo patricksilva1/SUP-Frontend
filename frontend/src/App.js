@@ -1,6 +1,34 @@
-import React from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+
+class ErrorBoundary extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    // Atualiza o state para que a próxima renderização mostre a UI de fallback
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // Você também pode registrar o erro em um serviço de log de erros aqui
+    console.error(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // Você pode retornar qualquer UI de fallback desejada
+      return <h1>Algo deu errado. Por favor, tente novamente mais tarde.</h1>;
+    }
+
+    return this.props.children;
+  }
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -13,6 +41,7 @@ class App extends React.Component {
       pageSize: 10, // Tamanho da página (limite de transferências por página)
       saldoTotal: 0, // Saldo total
       saldoPeriodo: 0, // Saldo no período
+      errorMessage: '', // Mensagem de erro
     };
   }
 
@@ -74,23 +103,23 @@ class App extends React.Component {
           console.error(error);
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por período.' });
         });
-    }else if(!startDate || !endDate){
+    } else if (!startDate || !endDate) {
       axios
-      .get('http://localhost:8080/api/v1/transfers/operador', {
-        params: {
-          nomeOperador: operatorName,
-        },
-      })
-      .then((response) => {
-        const transferencias = response.data;
-        console.log(transferencias);
-        this.setState({ transferencias, errorMessage: '' });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por operador.' });
-      });
-    } 
+        .get('http://localhost:8080/api/v1/transfers/operador', {
+          params: {
+            nomeOperador: operatorName,
+          },
+        })
+        .then((response) => {
+          const transferencias = response.data;
+          console.log(transferencias);
+          this.setState({ transferencias, errorMessage: '' });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por operador.' });
+        });
+    }
     else {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
@@ -327,141 +356,176 @@ class App extends React.Component {
     const transferenciasPaginadas = transferencias.slice(startIndex, endIndex);
 
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1>Bank Dashboard</h1>
-          <div>
-            <label htmlFor="operatorName">Nome Operador Transacionado:</label>
-            <input
-              type="text"
-              id="operatorName"
-              name="operatorName"
-              value={operatorName}
-              onChange={this.handleInputChange}
-            />
-          </div>
+      <ErrorBoundary>
 
-          <div>
-            <label htmlFor="startDate">Data de Início:</label>
-            <input
-              type="date"
-              id="startDate"
-              name="startDate"
-              value={startDate}
-              onChange={this.handleInputChange}
-              placeholder="dd/MM/yyyy" // Placeholder formatado
-            />
-          </div>
-          <div>
-            <label htmlFor="endDate">Data de Fim:</label>
-            <input
-              type="date"
-              id="endDate"
-              name="endDate"
-              value={endDate}
-              onChange={this.handleInputChange}
-              placeholder="dd/MM/yyyy" // Placeholder Formatado
-            />
-          </div>
 
-          <button onClick={this.handleSearch}>Pesquisar</button>
-
-          <div className='bank'>
-            <p>Saldo Total: {saldoTotal} R$</p>
-            <p>Saldo no Período: {saldoPeriodo} R$</p>
-          </div>
-
-          {/* Renderização das tabelas */}
-          <div className="table-container">
-            <div className="table-column">
-              <table className="table table-data-transfer">
-                <thead>
-                  <tr>
-                    <th>Transferencia ID</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transferenciasPaginadas.map((transferencia) => (
-                    <tr key={transferencia.id}>
-                      <td>{transferencia.id}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className="App">
+          <header className="App-header">
+            <h1>Bank Dashboard</h1>
+            <div>
+              <label htmlFor="operatorName">Nome Operador Transacionado:</label>
+              <input
+                type="text"
+                id="operatorName"
+                name="operatorName"
+                value={operatorName}
+                onChange={this.handleInputChange}
+              />
             </div>
 
-            <div className="table-column">
-              <table className="table table-data-transfer">
-                <thead>
-                  <tr>
-                    <th>Data de Transferência</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transferenciasPaginadas.map((transferencia) => (
-                    <tr key={transferencia.id}>
-                      <td>{moment(transferencia.dataTransferencia).format('DD/MM/YYYY')}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div>
+              <label htmlFor="startDate">Data de Início:</label>
+              <input
+                type="date"
+                id="startDate"
+                name="startDate"
+                value={startDate}
+                onChange={this.handleInputChange}
+                placeholder="dd/MM/yyyy" // Placeholder formatado
+              />
+            </div>
+            <div>
+              <label htmlFor="endDate">Data de Fim:</label>
+              <input
+                type="date"
+                id="endDate"
+                name="endDate"
+                value={endDate}
+                onChange={this.handleInputChange}
+                placeholder="dd/MM/yyyy" // Placeholder Formatado
+              />
             </div>
 
-            <div className="table-column">
-              <table className="table table-data-transfer">
-                <thead>
-                  <tr>
-                    <th>Valor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transferenciasPaginadas.map((transferencia) => (
-                    <tr key={transferencia.id}>
-                      <td>{transferencia.valor}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <button onClick={this.handleSearch}>Pesquisar</button>
+
+            <div className='bank'>
+              <p>Saldo Total: {saldoTotal} R$</p>
+              <p>Saldo no Período: {saldoPeriodo} R$</p>
             </div>
 
-            <div className="table-column">
-              <table className="table table-data-transfer">
-                <thead>
-                  <tr>
-                    <th>Tipo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transferenciasPaginadas.map((transferencia) => (
-                    <tr key={transferencia.id}>
-                      <td>{transferencia.tipo}</td>
+            {/* Renderização das tabelas */}
+            <div className="table-container">
+              <div className="table-column">
+                <table className="table table-data-transfer">
+                  <thead>
+                    <tr>
+                      <th>Transferencia ID</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(transferenciasPaginadas) ? (
+                      transferenciasPaginadas.map((transferencia) => (
+                        <tr key={transferencia.id}>
+                          <td>{transferencia.id}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="1">Nenhuma transferência encontrada.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-            <div className="table-column">
-              <table className="table table-data-transfer">
-                <thead>
-                  <tr>
-                    <th>Nome do Operador</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transferenciasPaginadas.map((transferencia) => (
-                    <tr key={transferencia.id}>
-                      {/* <td>{transferencia.nomeOperadorTransacao}</td> */}
-                      <td className={transferencia.nomeOperadorTransacao ? '' : 'empty-cell'}>
-                        {transferencia.nomeOperadorTransacao}
-                      </td>
+              <div className="table-column">
+                <table className="table table-data-transfer">
+                  <thead>
+                    <tr>
+                      <th>Data de Transferência</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(transferenciasPaginadas) ? (
+                      transferenciasPaginadas.map((transferencia) => (
+                        <tr key={transferencia.id}>
+                          <td>{moment(transferencia.dataTransferencia).format('DD/MM/YYYY')}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="1">Nenhuma transferência encontrada.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-            {/* <div className="table-column">
+              {/* Tabela Valor */}
+              <div className="table-column">
+                <table className="table table-data-transfer">
+                  <thead>
+                    <tr>
+                      <th>Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(transferenciasPaginadas) ? (
+                      transferenciasPaginadas.map((transferencia) => (
+                        <tr key={transferencia.id}>
+                          <td>{transferencia.valor}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="1">Nenhuma transferência encontrada.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Tabela Tipo */}
+              <div className="table-column">
+                <table className="table table-data-transfer">
+                  <thead>
+                    <tr>
+                      <th>Tipo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(transferenciasPaginadas) ? (
+                      transferenciasPaginadas.map((transferencia) => (
+                        <tr key={transferencia.id}>
+                          <td>{transferencia.tipo}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="1">Nenhuma transferência encontrada.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Tabela Nome do Operador */}
+              <div className="table-column">
+                <table className="table table-data-transfer">
+                  <thead>
+                    <tr>
+                      <th>Nome do Operador</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(transferenciasPaginadas) ? (
+                      transferenciasPaginadas.map((transferencia) => (
+                        <tr key={transferencia.id}>
+                          <td className={transferencia.nomeOperadorTransacao ? '' : 'empty-cell'}>
+                            {transferencia.nomeOperadorTransacao}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="1">Nenhuma transferência encontrada.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* <div className="table-column">
               <table className="table table-data-transfer">
                 <thead>
                   <tr>
@@ -478,7 +542,7 @@ class App extends React.Component {
               </table>
             </div> */}
 
-            {/* <div className="table-column">
+              {/* <div className="table-column">
               <table className="table table-data-transfer">
                 <thead>
                   <tr>
@@ -494,37 +558,38 @@ class App extends React.Component {
                 </tbody>
               </table>
             </div> */}
-          </div>
+            </div>
 
-          <div className="pagination">
+            <div className="pagination">
 
-            <button onClick={() => this.handlePageChange(currentPage - 2)}
-              disabled={currentPage <= 1}>
-              ⮜⮜
-            </button>
+              <button onClick={() => this.handlePageChange(currentPage - 2)}
+                disabled={currentPage <= 1}>
+                ⮜⮜
+              </button>
 
-            <button onClick={() => this.handlePageChange(currentPage - 1)}
-              disabled={currentPage === 0}>
-              ⮜
-            </button>
+              <button onClick={() => this.handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}>
+                ⮜
+              </button>
 
-            {/* Exibir informações da página */}
-            <p>
-              Página: {currentPage + 1} de {totalPages}
-            </p>
+              {/* Exibir informações da página */}
+              <p>
+                Página: {currentPage + 1} de {totalPages}
+              </p>
 
-            <button onClick={() => this.handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages - 1 || totalPages === 0}>
-              ➤
-            </button>
+              <button onClick={() => this.handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages - 1 || totalPages === 0}>
+                ➤
+              </button>
 
-            <button onClick={() => this.handlePageChange(currentPage + 2)}
-              disabled={currentPage >= totalPages - 2}>
-              ➤➤
-            </button>
-          </div>
-        </header>
-      </div>
+              <button onClick={() => this.handlePageChange(currentPage + 2)}
+                disabled={currentPage >= totalPages - 2}>
+                ➤➤
+              </button>
+            </div>
+          </header>
+        </div>
+      </ErrorBoundary>
     );
   }
 }
