@@ -45,42 +45,17 @@ class App extends React.Component {
     if (!operatorName && !startDate && !endDate) {
       axios
         .get('http://localhost:8080/api/v1/transfers', {
-          params: {
-          
-          },
+          params: {},
         })
         .then((response) => {
-          // Manipular a resposta do backend aqui
-          const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+          const transferencias = response.data;
           console.log(transferencias);
-
-          // Atualizar o estado com as transferências recebidas
           this.setState({ transferencias });
         })
         .catch((error) => {
-          // Manipular os erros aqui
           console.error(error);
         });
-
-          // Obter Saldo no Período por Nome
-          axios
-            .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
-              params: {
-                dataInicio: startDate,
-                dataFim: endDate,
-                nome: operatorName,
-              },
-            })
-            .then((saldoPeriodoResponse) => {
-              const saldoPeriodo = saldoPeriodoResponse.data;
-              console.log(saldoPeriodo);
-              // Atualizar o estado com o saldo do período recebido
-              this.setState({ saldoPeriodo });
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-    } if (!operatorName) {
+    } else if (!operatorName) {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo', {
           params: {
@@ -89,39 +64,37 @@ class App extends React.Component {
           },
         })
         .then((response) => {
-          // Manipular a resposta do backend aqui
-          const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+          const transferencias = response.data;
           console.log(transferencias);
-
-          // Atualizar o estado com as transferências recebidas
           this.setState({ transferencias });
         })
         .catch((error) => {
-          // Manipular os erros aqui
           console.error(error);
         });
-       
-      // Obter Saldo no Período por Nome
+    } else if (!startDate || !endDate) {
       axios
-        .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
+        .get('http://localhost:8080/api/v1/transfers/operador', {
           params: {
-            dataInicio: startDate,
-            dataFim: endDate,
-            nome: operatorName,
+            nomeOperador: operatorName,
           },
         })
-        .then((saldoPeriodoResponse) => {
-          const saldoPeriodo = saldoPeriodoResponse.data;
-          console.log(saldoPeriodo);
-          // Atualizar o estado com o saldo do período recebido
-          this.setState({ saldoPeriodo });
+        .then((response) => {
+          const transferencias = response.data;
+          console.log(transferencias);
+          this.setState({ transferencias });
         })
         .catch((error) => {
-          console.error(error);
+          if (error.response && error.response.status === 404) {
+            // Nome do operador não encontrado, não faz nenhuma alteração na tela
+            console.log('Nome do operador não encontrado');
+          } else {
+            console.error(error);
+          }
         });
-    } else {
+    }
+    else {
       axios
-        .get('http://localhost:8080/api/v1/transfers/periodo', {
+        .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
           params: {
             dataInicio: startDate,
             dataFim: endDate,
@@ -129,53 +102,49 @@ class App extends React.Component {
           },
         })
         .then((response) => {
-          // Manipular a resposta do backend aqui
-          const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+          const transferencias = response.data;
           console.log(transferencias);
-
-          // Atualizar o estado com as transferências recebidas
           this.setState({ transferencias });
-
-          // Obter Saldo Total por Nome
-          axios
-            .get('http://localhost:8080/api/v1/transfers/saldo-total', {
-              params: {
-                nome: operatorName,
-              },
-            })
-            .then((saldoTotalResponse) => {
-              const saldoTotal = saldoTotalResponse.data;
-              console.log(saldoTotal);
-              // Atualizar o estado com o saldo total recebido
-              this.setState({ saldoTotal });
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-
-          // Obter Saldo no Período por Nome
-          axios
-            .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
-              params: {
-                dataInicio: startDate,
-                dataFim: endDate,
-                nome: operatorName,
-              },
-            })
-            .then((saldoPeriodoResponse) => {
-              const saldoPeriodo = saldoPeriodoResponse.data;
-              console.log(saldoPeriodo);
-              // Atualizar o estado com o saldo do período recebido
-              this.setState({ saldoPeriodo });
-            })
-            .catch((error) => {
-              console.error(error);
-            });
         })
         .catch((error) => {
           console.error(error);
         });
+
     }
+
+    // Obter Saldo Total por Nome
+    axios
+      .get('http://localhost:8080/api/v1/transfers/saldo-total', {
+        params: {
+          nome: operatorName,
+        },
+      })
+      .then((saldoTotalResponse) => {
+        const saldoTotal = saldoTotalResponse.data;
+        console.log(saldoTotal);
+        this.setState({ saldoTotal });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    // Obter Saldo no Período por Nome
+    axios
+      .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
+        params: {
+          dataInicio: startDate,
+          dataFim: endDate,
+          nome: operatorName,
+        },
+      })
+      .then((saldoPeriodoResponse) => {
+        const saldoPeriodo = saldoPeriodoResponse.data;
+        console.log(saldoPeriodo);
+        this.setState({ saldoPeriodo });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   handleSearchByOperator = () => {
@@ -189,14 +158,17 @@ class App extends React.Component {
         },
       })
       .then((response) => {
-        // Manipular a resposta do backend aqui
-        const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+        const transferencias = response.data;
         console.log(transferencias);
-        // Use os dados das transferências conforme necessário
+        this.setState({ transferencias });
       })
       .catch((error) => {
-        // Manipular os erros aqui
-        console.error(error);
+        if (error.response && error.response.status === 404) {
+          // Nome do operador não encontrado, não faz nenhuma alteração na tela
+          console.log('Nome do operador não encontrado');
+        } else {
+          console.error(error);
+        }
       });
   };
 
