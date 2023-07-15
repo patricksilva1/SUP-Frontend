@@ -11,6 +11,8 @@ class App extends React.Component {
       transferencias: [],
       currentPage: 0, // Página atual
       pageSize: 10, // Tamanho da página (limite de transferências por página)
+      saldoTotal: 0, // Saldo total
+      saldoPeriodo: 0, // Saldo no período
     };
   }
 
@@ -37,32 +39,91 @@ class App extends React.Component {
   };
 
   handleSearch = () => {
-    const { startDate, endDate } = this.state;
+    const { startDate, endDate, operatorName } = this.state;
 
     // Fazer a solicitação para a API de backend
-    axios
-      .get('http://localhost:8080/api/v1/transfers/periodo', {
-        params: {
-          dataInicio: startDate,
-          dataFim: endDate,
-        },
-      })
-      .then((response) => {
-        // Manipular a resposta do backend aqui
-        const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
-        console.log(transferencias);
 
-        // Atualizar o estado com as transferências recebidas
-        this.setState({ transferencias });
-      })
-      .catch((error) => {
-        // Manipular os erros aqui
-        console.error(error);
-      });
+    if (!operatorName) {
+      axios
+        .get('http://localhost:8080/api/v1/transfers/periodo', {
+          params: {
+            dataInicio: startDate,
+            dataFim: endDate,
+          },
+        })
+        .then((response) => {
+          // Manipular a resposta do backend aqui
+          const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+          console.log(transferencias);
+  
+          // Atualizar o estado com as transferências recebidas
+          this.setState({ transferencias });
+        })
+        .catch((error) => {
+          // Manipular os erros aqui
+          console.error(error);
+        });
+    } else {
+      axios
+        .get('http://localhost:8080/api/v1/transfers/periodo', {
+          params: {
+            dataInicio: startDate,
+            dataFim: endDate,
+            nomeOperador: operatorName,
+          },
+        })
+        .then((response) => {
+          // Manipular a resposta do backend aqui
+          const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+          console.log(transferencias);
+  
+          // Atualizar o estado com as transferências recebidas
+          this.setState({ transferencias });
+  
+          // Obter Saldo Total por Nome
+          axios
+            .get('http://localhost:8080/api/v1/transfers/saldo-total', {
+              params: {
+                nome: operatorName,
+              },
+            })
+            .then((saldoTotalResponse) => {
+              const saldoTotal = saldoTotalResponse.data;
+              console.log(saldoTotal);
+              // Atualizar o estado com o saldo total recebido
+              this.setState({ saldoTotal });
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+  
+          // Obter Saldo no Período por Nome
+          axios
+  .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
+    params: {
+      dataInicio: startDate,
+      dataFim: endDate,
+      nome: operatorName,
+    },
+  })
+  .then((saldoPeriodoResponse) => {
+    const saldoPeriodo = saldoPeriodoResponse.data;
+    console.log(saldoPeriodo);
+    // Atualizar o estado com o saldo do período recebido
+    this.setState({ saldoPeriodo });
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   };
 
   handleSearchByOperator = () => {
-    const { operatorName} = this.state;
+    const { operatorName } = this.state;
 
     // Fazer a solicitação para a API de backend
     axios
@@ -85,7 +146,6 @@ class App extends React.Component {
 
   handleSearchByPeriodAndOperator = () => {
     const { startDate, endDate, operatorName } = this.state;
-
 
     // Fazer a solicitação para a API de backend
     axios
@@ -126,6 +186,87 @@ class App extends React.Component {
       });
   };
 
+
+
+  // a****************************************************************
+
+  handleSearchTransactionsByPeriodAndName = () => {
+    const { startDate, endDate, operatorName } = this.state;
+
+    axios
+      .get('http://localhost:8080/api/v1/transfers/transacoes', {
+        params: {
+          dataInicio: startDate,
+          dataFim: endDate,
+          nome: operatorName,
+        },
+      })
+      .then((response) => {
+        const transacoes = response.data;
+        console.log(transacoes);
+        // Use os dados das transações conforme necessário
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  handleGetTotalBalanceByName = () => {
+    const { operatorName } = this.state;
+
+    axios
+      .get('http://localhost:8080/api/v1/transfers/saldo-total', {
+        params: {
+          nome: operatorName,
+        },
+      })
+      .then((response) => {
+        const saldoTotal = response.data;
+        console.log(saldoTotal);
+        // Use o saldo total conforme necessário
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+  handleGetBalanceDuringPeriodByName = () => {
+    const { startDate, endDate, operatorName } = this.state;
+
+    axios
+      .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
+        params: {
+          dataInicio: startDate,
+          dataFim: endDate,
+          nome: operatorName,
+        },
+      })
+      .then((response) => {
+        const saldoPeriodo = response.data;
+        console.log(saldoPeriodo);
+        // Use o saldo do período conforme necessário
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  handleWithdraw = (idConta, valor) => {
+    axios
+      .post(`http://localhost:8080/api/v1/transfers/${idConta}/saque`, null, {
+        params: {
+          valor,
+        },
+      })
+      .then((response) => {
+        console.log('Saque realizado com sucesso');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  // a****************************************************************
+
   handlePageChange = (page) => {
     this.setState({ currentPage: page }, () => {
       // Chamar o método de pesquisa apropriado com base no tipo atual de pesquisa
@@ -141,7 +282,7 @@ class App extends React.Component {
   };
 
   render() {
-    const { startDate, endDate, operatorName, transferencias, currentPage, pageSize } = this.state;
+    const { startDate, endDate, operatorName, transferencias, currentPage, pageSize, saldoTotal, saldoPeriodo } = this.state;
 
     // Calcular o número total de páginas com base no número total de transferências
     const totalPages = Math.ceil(transferencias.length / pageSize);
@@ -158,6 +299,21 @@ class App extends React.Component {
         <header className="App-header">
           <h1>Bank Dashboard</h1>
           {/* ...outros elementos do cabeçalho... */}
+          {/* Exibição do saldo total */}
+        <p>Saldo Total: {saldoTotal}</p>
+        <p>Saldo no Período: {saldoPeriodo}</p>
+          <div>
+            <label htmlFor="operatorName">Nome Operador Transacionado:</label>
+            <input
+              type="text"
+              id="operatorName"
+              name="operatorName"
+              value={operatorName}
+              onChange={this.handleInputChange}
+            />
+          </div>
+          {/* <button onClick={this.handleSearchByOperator}>Pesquisar por Operador</button> */}
+
           <div>
             <label htmlFor="startDate">Data de Início:</label>
             <input
@@ -180,16 +336,7 @@ class App extends React.Component {
               placeholder="dd/MM/yyyy" // Adicione o placeholder formatado desejado
             />
           </div>
-          <div>
-            <label htmlFor="operatorName">Nome Operador Transacionado:</label>
-            <input
-              type="text"
-              id="operatorName"
-              name="operatorName"
-              value={operatorName}
-              onChange={this.handleInputChange}
-            />
-          </div>
+
           <button onClick={this.handleSearch}>Pesquisar</button>
 
           {/* Renderização das tabelas */}
@@ -274,7 +421,7 @@ class App extends React.Component {
                     <tr key={transferencia.id}>
                       {/* <td>{transferencia.nomeOperadorTransacao}</td> */}
                       <td className={transferencia.nomeOperadorTransacao ? '' : 'empty-cell'}>
-                      {transferencia.nomeOperadorTransacao}
+                        {transferencia.nomeOperadorTransacao}
                       </td>
                     </tr>
                   ))}
@@ -316,38 +463,31 @@ class App extends React.Component {
               </table>
             </div>
           </div>
+
           <div className="pagination">
 
-          <button
-              onClick={() => this.handlePageChange(currentPage - 1)}
-              disabled={currentPage === 0}
-            >
+            <button onClick={() => this.handlePageChange(currentPage - 1)}
+              disabled={currentPage === 0}>
               ⮜⮜
-            </button> 
+            </button>
 
-            <button
-              onClick={() => this.handlePageChange(currentPage - 1)}
-              disabled={currentPage === 0}
-            >
+            <button onClick={() => this.handlePageChange(currentPage - 1)}
+              disabled={currentPage === 0}>
               ⮜
             </button>
 
-                       {/* Exibir informações da página */}
-                <p>
-                  Página: {currentPage + 1} de {totalPages}
-                </p>
+            {/* Exibir informações da página */}
+            <p>
+              Página: {currentPage + 1} de {totalPages}
+            </p>
 
-            <button
-              onClick={() => this.handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages - 1}
-            >
+            <button onClick={() => this.handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages - 1}>
               ➤
             </button>
 
-            <button
-              onClick={() => this.handlePageChange(currentPage + 2)}
-              disabled={currentPage === totalPages - 1}
-            >
+            <button onClick={() => this.handlePageChange(currentPage + 2)}
+              disabled={currentPage === totalPages - 1}>
               ➤➤
             </button>
           </div>
