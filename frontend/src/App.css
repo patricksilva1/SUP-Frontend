@@ -35,3 +35,39 @@ button:hover {
   background-color: #000;
   color: #fff;
 }
+
+.table-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 200px;
+}
+
+.table-column {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 20px;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.table td:not(:last-child) {
+  border-right: 1px solid #ddd;
+}
+
+.table-id,
+.table-data-transfer {
+  width: 200px; /* Defina a largura desejada */
+}
