@@ -55,7 +55,7 @@ class App extends React.Component {
           // Manipular a resposta do backend aqui
           const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
           console.log(transferencias);
-  
+
           // Atualizar o estado com as transferências recebidas
           this.setState({ transferencias });
         })
@@ -76,10 +76,10 @@ class App extends React.Component {
           // Manipular a resposta do backend aqui
           const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
           console.log(transferencias);
-  
+
           // Atualizar o estado com as transferências recebidas
           this.setState({ transferencias });
-  
+
           // Obter Saldo Total por Nome
           axios
             .get('http://localhost:8080/api/v1/transfers/saldo-total', {
@@ -96,25 +96,25 @@ class App extends React.Component {
             .catch((error) => {
               console.error(error);
             });
-  
+
           // Obter Saldo no Período por Nome
           axios
-  .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
-    params: {
-      dataInicio: startDate,
-      dataFim: endDate,
-      nome: operatorName,
-    },
-  })
-  .then((saldoPeriodoResponse) => {
-    const saldoPeriodo = saldoPeriodoResponse.data;
-    console.log(saldoPeriodo);
-    // Atualizar o estado com o saldo do período recebido
-    this.setState({ saldoPeriodo });
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+            .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
+              params: {
+                dataInicio: startDate,
+                dataFim: endDate,
+                nome: operatorName,
+              },
+            })
+            .then((saldoPeriodoResponse) => {
+              const saldoPeriodo = saldoPeriodoResponse.data;
+              console.log(saldoPeriodo);
+              // Atualizar o estado com o saldo do período recebido
+              this.setState({ saldoPeriodo });
+            })
+            .catch((error) => {
+              console.error(error);
+            });
         })
         .catch((error) => {
           console.error(error);
@@ -298,10 +298,6 @@ class App extends React.Component {
       <div className="App">
         <header className="App-header">
           <h1>Bank Dashboard</h1>
-          {/* ...outros elementos do cabeçalho... */}
-          {/* Exibição do saldo total */}
-        <p>Saldo Total: {saldoTotal}</p>
-        <p>Saldo no Período: {saldoPeriodo}</p>
           <div>
             <label htmlFor="operatorName">Nome Operador Transacionado:</label>
             <input
@@ -312,7 +308,6 @@ class App extends React.Component {
               onChange={this.handleInputChange}
             />
           </div>
-          {/* <button onClick={this.handleSearchByOperator}>Pesquisar por Operador</button> */}
 
           <div>
             <label htmlFor="startDate">Data de Início:</label>
@@ -322,7 +317,7 @@ class App extends React.Component {
               name="startDate"
               value={startDate}
               onChange={this.handleInputChange}
-              placeholder="dd/MM/yyyy" // Adicione o placeholder formatado desejado
+              placeholder="dd/MM/yyyy" // Placeholder formatado
             />
           </div>
           <div>
@@ -333,11 +328,16 @@ class App extends React.Component {
               name="endDate"
               value={endDate}
               onChange={this.handleInputChange}
-              placeholder="dd/MM/yyyy" // Adicione o placeholder formatado desejado
+              placeholder="dd/MM/yyyy" // Placeholder Formatado
             />
           </div>
 
           <button onClick={this.handleSearch}>Pesquisar</button>
+
+          <div className='bank'>
+            <p>Saldo Total: {saldoTotal} R$</p>
+            <p>Saldo no Período: {saldoPeriodo} R$</p>
+          </div>
 
           {/* Renderização das tabelas */}
           <div className="table-container">

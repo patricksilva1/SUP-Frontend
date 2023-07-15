@@ -15,13 +15,8 @@ code {
 .App-header {
   display: flex;
   flex-wrap: wrap;
-  /* justify-content: center; */
   justify-content: space-evenly;
   align-items: center;
-}
-
-.App-header div {
-  /* margin-right: 10px; */
 }
 
 .App-header label {
@@ -36,7 +31,6 @@ code {
 .App-header button {
   margin-top: 10px;
 }
-
 
 button {
   padding: 10px 20px;
@@ -54,36 +48,23 @@ button:hover {
 }
 
 .table-container {
-  /* display: flex; */
   justify-content: center;
   gap: 20px;
-  /* Espaçamento entre as tabelas */
   flex-wrap: wrap;
-  /* Quebra de linha automática para as tabelas */
 }
 
 .table {
   border-collapse: collapse;
   width: 100%;
-  /* Defina a largura total da tabela */
   table-layout: fixed;
-  /* Largura fixa das colunas */
 }
 
-/* .table-column { */
-  /* display: inline-block; */
-  /* vertical-align: auto; */
-  /* margin-bottom: 20px; */
-  /* height: auto; */
-  /* Espaçamento entre as colunas */
-/* } */
 .table-column {
   display: table-cell;
   flex-direction: column;
   margin-bottom: 20px;
   margin-top: 20px;
   height: auto;
-  /* Espaçamento entre as colunas */
 }
 
 .table th,
@@ -91,18 +72,14 @@ button:hover {
   border: 1px solid #ddd;
   padding: 5%;
   white-space: nowrap;
-  /* Evita que o texto quebre em várias linhas */
   overflow: hidden;
-  /* Oculta o conteúdo excedente */
   text-overflow: ellipsis;
-  /* Adiciona reticências para indicar que há mais conteúdo */
 }
 
 .table th {
   background-color: #f2f2f2;
   text-align: left;
 }
-
 
 .table td:not(:last-child) {
   border-right: 1px solid #ddd;
@@ -111,12 +88,11 @@ button:hover {
 .table-id,
 .table-data-transfer {
   width: 200px;
-  /* Defina a largura desejada */
 }
+
 .empty-cell {
-   /* Defina o tamanho desejado */
-   width: 200px;
-   height: 19px;
+  width: 200px;
+  height: 19px;
   padding: auto;
 }
 
@@ -132,5 +108,17 @@ button:hover {
 }
 
 .pagination p {
+  margin: 0 10px;
+}
+
+.bank {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bank p {
   margin: 0 10px;
 }
