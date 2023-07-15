@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -38,7 +37,7 @@ class App extends React.Component {
   };
 
   handleSearch = () => {
-    const { startDate, endDate} = this.state;
+    const { startDate, endDate } = this.state;
 
     // Fazer a solicitação para a API de backend
     axios
@@ -63,7 +62,7 @@ class App extends React.Component {
   };
 
   handleSearchByOperator = () => {
-    const { operatorName } = this.state;
+    const { operatorName} = this.state;
 
     // Fazer a solicitação para a API de backend
     axios
@@ -144,16 +143,11 @@ class App extends React.Component {
   render() {
     const { startDate, endDate, operatorName, transferencias, currentPage, pageSize } = this.state;
 
-    // Verificar se há apenas uma página
-    // const isSinglePage = totalPages === 1;
-
-
     // Calcular o número total de páginas com base no número total de transferências
     const totalPages = Math.ceil(transferencias.length / pageSize);
 
     // Calcular o índice inicial e final das transferências exibidas na página atual
     const startIndex = currentPage * pageSize;
-
     const endIndex = Math.min(startIndex + pageSize, transferencias.length);
 
     // Filtrar as transferências com base no índice inicial e final
@@ -163,7 +157,6 @@ class App extends React.Component {
       <div className="App">
         <header className="App-header">
           <h1>Patrick's Bank Dashboard</h1>
-          
           {/* ...outros elementos do cabeçalho... */}
           <div>
             <label htmlFor="startDate">Data de Início:</label>
@@ -321,23 +314,38 @@ class App extends React.Component {
             </div>
           </div>
           <div className="pagination">
+
+          <button
+              onClick={() => this.handlePageChange(currentPage - 1)}
+              disabled={currentPage === 0}
+            >
+              ⮜⮜
+            </button> 
+
             <button
               onClick={() => this.handlePageChange(currentPage - 1)}
               disabled={currentPage === 0}
             >
-              Anterior
+              ⮜
             </button>
 
-             {/* Exibir informações da página */}
+                       {/* Exibir informações da página */}
                 <p>
-                  Página {currentPage + 1} de {totalPages}
+                  Página: {currentPage + 1} de {totalPages}
                 </p>
-            
+
             <button
               onClick={() => this.handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages - 1}
             >
-              Próxima
+              ➤
+            </button>
+
+            <button
+              onClick={() => this.handlePageChange(currentPage + 2)}
+              disabled={currentPage === totalPages - 1}
+            >
+              ➤➤
             </button>
           </div>
         </header>
