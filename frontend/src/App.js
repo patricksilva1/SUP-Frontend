@@ -272,7 +272,10 @@ class App extends React.Component {
                 <tbody>
                   {transferenciasPaginadas.map((transferencia) => (
                     <tr key={transferencia.id}>
-                      <td>{transferencia.nomeOperadorTransacao}</td>
+                      {/* <td>{transferencia.nomeOperadorTransacao}</td> */}
+                      <td className={transferencia.nomeOperadorTransacao ? '' : 'empty-cell'}>
+                      {transferencia.nomeOperadorTransacao}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
