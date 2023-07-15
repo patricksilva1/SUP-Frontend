@@ -156,7 +156,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h1>Patrick's Bank Dashboard</h1>
+          <h1>Bank Dashboard</h1>
           {/* ...outros elementos do cabeçalho... */}
           <div>
             <label htmlFor="startDate">Data de Início:</label>
