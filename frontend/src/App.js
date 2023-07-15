@@ -50,10 +50,12 @@ class App extends React.Component {
         .then((response) => {
           const transferencias = response.data;
           console.log(transferencias);
-          this.setState({ transferencias });
+          this.setState({ transferencias, errorMessage: '' });
         })
         .catch((error) => {
           console.error(error);
+          // Exibir uma mensagem de erro ao usuário
+          this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências.' });
         });
     } else if (!operatorName) {
       axios
@@ -66,32 +68,29 @@ class App extends React.Component {
         .then((response) => {
           const transferencias = response.data;
           console.log(transferencias);
-          this.setState({ transferencias });
+          this.setState({ transferencias, errorMessage: '' });
         })
         .catch((error) => {
           console.error(error);
+          this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por período.' });
         });
-    } else if (!startDate || !endDate) {
+    }else if(!startDate || !endDate){
       axios
-        .get('http://localhost:8080/api/v1/transfers/operador', {
-          params: {
-            nomeOperador: operatorName,
-          },
-        })
-        .then((response) => {
-          const transferencias = response.data;
-          console.log(transferencias);
-          this.setState({ transferencias });
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 404) {
-            // Nome do operador não encontrado, não faz nenhuma alteração na tela
-            console.log('Nome do operador não encontrado');
-          } else {
-            console.error(error);
-          }
-        });
-    }
+      .get('http://localhost:8080/api/v1/transfers/operador', {
+        params: {
+          nomeOperador: operatorName,
+        },
+      })
+      .then((response) => {
+        const transferencias = response.data;
+        console.log(transferencias);
+        this.setState({ transferencias, errorMessage: '' });
+      })
+      .catch((error) => {
+        console.error(error);
+        this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por operador.' });
+      });
+    } 
     else {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
@@ -104,12 +103,14 @@ class App extends React.Component {
         .then((response) => {
           const transferencias = response.data;
           console.log(transferencias);
-          this.setState({ transferencias });
+          this.setState({ transferencias, errorMessage: '' });
         })
         .catch((error) => {
           console.error(error);
+          this.setState({
+            errorMessage: 'Ocorreu um erro ao buscar as transferências por período e operador.',
+          });
         });
-
     }
 
     // Obter Saldo Total por Nome
@@ -122,10 +123,11 @@ class App extends React.Component {
       .then((saldoTotalResponse) => {
         const saldoTotal = saldoTotalResponse.data;
         console.log(saldoTotal);
-        this.setState({ saldoTotal });
+        this.setState({ saldoTotal, errorMessage: '' });
       })
       .catch((error) => {
         console.error(error);
+        this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo total.' });
       });
 
     // Obter Saldo no Período por Nome
@@ -140,10 +142,11 @@ class App extends React.Component {
       .then((saldoPeriodoResponse) => {
         const saldoPeriodo = saldoPeriodoResponse.data;
         console.log(saldoPeriodo);
-        this.setState({ saldoPeriodo });
+        this.setState({ saldoPeriodo, errorMessage: '' });
       })
       .catch((error) => {
         console.error(error);
+        this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo do período.' });
       });
   };
 
@@ -160,15 +163,11 @@ class App extends React.Component {
       .then((response) => {
         const transferencias = response.data;
         console.log(transferencias);
-        this.setState({ transferencias });
+        this.setState({ transferencias, errorMessage: '' });
       })
       .catch((error) => {
-        if (error.response && error.response.status === 404) {
-          // Nome do operador não encontrado, não faz nenhuma alteração na tela
-          console.log('Nome do operador não encontrado');
-        } else {
-          console.error(error);
-        }
+        console.error(error);
+        this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por operador.' });
       });
   };
 
@@ -185,14 +184,15 @@ class App extends React.Component {
         },
       })
       .then((response) => {
-        // Manipular a resposta do backend aqui
-        const transferencias = response.data; // Supondo que a resposta é um array de objetos Transferencia
+        const transferencias = response.data;
         console.log(transferencias);
-        // Use os dados das transferências conforme necessário
+        this.setState({ transferencias, errorMessage: '' });
       })
       .catch((error) => {
-        // Manipular os erros aqui
         console.error(error);
+        this.setState({
+          errorMessage: 'Ocorreu um erro ao buscar as transferências por período e operador.',
+        });
       });
   };
 
@@ -207,10 +207,11 @@ class App extends React.Component {
       .then((response) => {
         const transferencias = response.data;
         console.log(transferencias);
-        this.setState({ transferencias });
+        this.setState({ transferencias, errorMessage: '' });
       })
       .catch((error) => {
         console.error(error);
+        this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências paginadas.' });
       });
   };
 
@@ -232,10 +233,12 @@ class App extends React.Component {
       .then((response) => {
         const transacoes = response.data;
         console.log(transacoes);
-        // Use os dados das transações conforme necessário
       })
       .catch((error) => {
         console.error(error);
+        this.setState({
+          errorMessage: 'Ocorreu um erro ao buscar as transações por período e nome.',
+        });
       });
   };
 
@@ -251,10 +254,10 @@ class App extends React.Component {
       .then((response) => {
         const saldoTotal = response.data;
         console.log(saldoTotal);
-        // Use o saldo total conforme necessário
       })
       .catch((error) => {
         console.error(error);
+        this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo total.' });
       });
   };
   handleGetBalanceDuringPeriodByName = () => {
@@ -271,10 +274,10 @@ class App extends React.Component {
       .then((response) => {
         const saldoPeriodo = response.data;
         console.log(saldoPeriodo);
-        // Use o saldo do período conforme necessário
       })
       .catch((error) => {
         console.error(error);
+        this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo do período.' });
       });
   };
 
@@ -290,6 +293,7 @@ class App extends React.Component {
       })
       .catch((error) => {
         console.error(error);
+        this.setState({ errorMessage: 'Ocorreu um erro ao realizar o saque.' });
       });
   };
 
