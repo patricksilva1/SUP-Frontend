@@ -36,17 +36,19 @@ button {
   padding: 10px 20px;
   background-color: #fff;
   color: #000;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
-button:hover {
+button:hover,
+button:focus {
   background-color: #000;
   color: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
-
 .table-container {
   justify-content: center;
   gap: 20px;
@@ -105,8 +107,12 @@ button:hover {
 
 .pagination button {
   margin: 0 5px;
+  transition: box-shadow 0.3s ease;
 }
-
+.pagination button:hover,
+.pagination button:focus {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
 .pagination p {
   margin: 0 10px;
 }
@@ -117,8 +123,10 @@ button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: sticky;
 }
 
 .bank p {
   margin: 0 10px;
+  position: sticky;
 }
