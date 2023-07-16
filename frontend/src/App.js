@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 class ErrorBoundary extends Component {
 
@@ -30,6 +32,40 @@ class ErrorBoundary extends Component {
 }
 
 class App extends React.Component {
+
+  handlePrintTransfers = () => {
+    const { transferencias, saldoTotal, saldoPeriodo } = this.state;
+  
+    // Criar um novo objeto jsPDF
+    const doc = new jsPDF();
+  
+    // Definir o título e as colunas da tabela no PDF
+    const tableColumns = ['Transferencia ID', 'Data de Transferência', 'Valor', 'Tipo', 'Nome do Operador - Destino'];
+    const tableData = [];
+  
+    // Preencher os dados da tabela com as transferências
+    transferencias.forEach((transferencia) => {
+      const rowData = [
+        transferencia.id,
+        moment(transferencia.dataTransferencia).format('DD/MM/YYYY'),
+        transferencia.valor,
+        transferencia.tipo,
+        transferencia.nomeOperadorTransacao || ''
+      ];
+      tableData.push(rowData);
+    });
+  
+    // Adicionar a tabela ao PDF
+    doc.autoTable(tableColumns, tableData);
+  
+    // Adicionar os campos de Saldo Total e Saldo no Período
+    doc.text(`Saldo Total: ${saldoTotal} R$`, 14, doc.lastAutoTable.finalY + 10);
+    doc.text(`Saldo no Período: ${saldoPeriodo} R$`, 14, doc.lastAutoTable.finalY + 20);
+  
+    // Salvar o arquivo PDF
+    doc.save('transferencias.pdf');
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -86,7 +122,7 @@ class App extends React.Component {
     const { startDate, endDate, operatorName } = this.state;
     const formattedStartDate = moment(startDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
     const formattedEndDate = moment(endDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-  
+
     // Fazer a solicitação para a API de backend
     if (!operatorName && !startDate && !endDate) {
       axios
@@ -198,7 +234,7 @@ class App extends React.Component {
 
   handleSearchByOperator = () => {
     const { operatorName } = this.state;
-  
+
     // Fazer a solicitação para a API de backend
     axios
       .get('http://localhost:8080/api/v1/transfers/operador', {
@@ -221,7 +257,7 @@ class App extends React.Component {
     const { startDate, endDate, operatorName } = this.state;
     const formattedStartDate = moment(startDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
     const formattedEndDate = moment(endDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-  
+
     // Fazer a solicitação para a API de backend
     axios
       .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
@@ -622,6 +658,13 @@ class App extends React.Component {
                 ➤➤
               </button>
             </div>
+          </header>
+        </div>
+        <div className="App">
+          <header className="App-header">
+            {/* ... */}
+            <button onClick={this.handlePrintTransfers}>Imprimir Transferências</button>
+            {/* ... */}
           </header>
         </div>
       </ErrorBoundary>
