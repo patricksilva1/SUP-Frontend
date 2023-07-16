@@ -45,17 +45,32 @@ class App extends React.Component {
     };
   }
 
+  // handleStartDateChange = (date) => {
+  //   this.setState({
+  //     startDate: date,
+  //   });
+  // };
   handleStartDateChange = (date) => {
+    const formattedDate = moment(date).format('DD/MM/YYYY');
     this.setState({
-      startDate: date,
+      startDate: formattedDate,
     });
   };
 
+
+
+  // handleEndDateChange = (date) => {
+  //   this.setState({
+  //     endDate: date,
+  //   });
+  // };
   handleEndDateChange = (date) => {
+    const formattedDate = moment(date).format('DD/MM/YYYY');
     this.setState({
-      endDate: date,
+      endDate: formattedDate,
     });
   };
+
 
   handleInputChange = (event) => {
     const target = event.target;
@@ -69,7 +84,9 @@ class App extends React.Component {
 
   handleSearch = () => {
     const { startDate, endDate, operatorName } = this.state;
-
+    const formattedStartDate = moment(startDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+    const formattedEndDate = moment(endDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+  
     // Fazer a solicitação para a API de backend
     if (!operatorName && !startDate && !endDate) {
       axios
@@ -90,8 +107,8 @@ class App extends React.Component {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo', {
           params: {
-            dataInicio: startDate,
-            dataFim: endDate,
+            dataInicio: formattedStartDate,
+            dataFim: formattedEndDate,
           },
         })
         .then((response) => {
@@ -124,8 +141,8 @@ class App extends React.Component {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
           params: {
-            dataInicio: startDate,
-            dataFim: endDate,
+            dataInicio: formattedStartDate,
+            dataFim: formattedEndDate,
             nomeOperador: operatorName,
           },
         })
@@ -163,8 +180,8 @@ class App extends React.Component {
     axios
       .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
         params: {
-          dataInicio: startDate,
-          dataFim: endDate,
+          dataInicio: formattedStartDate,
+          dataFim: formattedEndDate,
           nome: operatorName,
         },
       })
@@ -181,7 +198,7 @@ class App extends React.Component {
 
   handleSearchByOperator = () => {
     const { operatorName } = this.state;
-
+  
     // Fazer a solicitação para a API de backend
     axios
       .get('http://localhost:8080/api/v1/transfers/operador', {
@@ -202,13 +219,15 @@ class App extends React.Component {
 
   handleSearchByPeriodAndOperator = () => {
     const { startDate, endDate, operatorName } = this.state;
-
+    const formattedStartDate = moment(startDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+    const formattedEndDate = moment(endDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+  
     // Fazer a solicitação para a API de backend
     axios
       .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
         params: {
-          dataInicio: startDate,
-          dataFim: endDate,
+          dataInicio: formattedStartDate,
+          dataFim: formattedEndDate,
           nomeOperador: operatorName,
         },
       })
@@ -383,6 +402,14 @@ class App extends React.Component {
                 onChange={this.handleInputChange}
                 placeholder="dd/MM/yyyy" // Placeholder formatado
               />
+              {/* <input
+                type="date"
+                id="startDate"
+                name="startDate"
+                value={moment(startDate, 'DD/MM/YYYY').format('YYYY-MM-DD')}
+                onChange={this.handleStartDateChange}
+                placeholder="dd/MM/yyyy"
+              /> */}
             </div>
             <div>
               <label htmlFor="endDate">Data de Fim:</label>
@@ -394,6 +421,14 @@ class App extends React.Component {
                 onChange={this.handleInputChange}
                 placeholder="dd/MM/yyyy" // Placeholder Formatado
               />
+              {/* <input
+                type="date"
+                id="endDate"
+                name="endDate"
+                value={moment(endDate, 'DD/MM/YYYY').format('YYYY-MM-DD')}
+                onChange={this.handleEndDateChange}
+                placeholder="dd/MM/yyyy"
+              /> */}
             </div>
 
             <button onClick={this.handleSearch}>Pesquisar</button>
@@ -504,7 +539,7 @@ class App extends React.Component {
                 <table className="table table-data-transfer">
                   <thead>
                     <tr>
-                      <th>Nome do Operador</th>
+                      <th>Nome do Operador - Destino</th>
                     </tr>
                   </thead>
                   <tbody>
