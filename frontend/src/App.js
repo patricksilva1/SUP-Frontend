@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import logo from './logo.svg';
 import axios from 'axios';
 import moment from 'moment';
 import jsPDF from 'jspdf';
@@ -306,200 +307,215 @@ class App extends React.Component {
       <ErrorBoundary>
         <div className="App">
           <header className="App-header">
-            <h1>Bank Dashboard</h1>
-            <div>
-              <label htmlFor="operatorName">Nome Operador Transacionado:</label>
-              <input
-                type="text"
-                id="operatorName"
-                name="operatorName"
-                value={operatorName}
-                onChange={this.handleInputChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="startDate">Data de Início:</label>
-              <input
-                type="date"
-                id="startDate"
-                name="startDate"
-                value={startDate}
-                onChange={this.handleInputChange}
-                placeholder="dd/MM/yyyy" // Placeholder formatado
-              />
-            </div>
-
-            <div>
-              <label htmlFor="endDate">Data de Fim:</label>
-              <input
-                type="date"
-                id="endDate"
-                name="endDate"
-                value={endDate}
-                onChange={this.handleInputChange}
-                placeholder="dd/MM/yyyy" // Placeholder Formatado
-              />
-            </div>
-
-            <button onClick={this.handleSearch}>Pesquisar</button>
-
-            <div className='bank'>
-              <p>Saldo Total: {saldoTotal} R$</p>
-              <p>Saldo no Período: {saldoPeriodo} R$</p>
-            </div>
-
-            {/* Renderização das tabelas */}
-            <div className="table-container">
-              <div className="table-column">
-                <table className="table table-data-transfer">
-                  <thead>
-                    <tr>
-                      <th>Transferencia ID</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.isArray(transferenciasPaginadas) ? (
-                      transferenciasPaginadas.map((transferencia) => (
-                        <tr key={transferencia.id}>
-                          <td>{transferencia.id}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="1">Nenhuma transferência encontrada.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="table-column">
-                <table className="table table-data-transfer">
-                  <thead>
-                    <tr>
-                      <th>Data de Transferência</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.isArray(transferenciasPaginadas) ? (
-                      transferenciasPaginadas.map((transferencia) => (
-                        <tr key={transferencia.id}>
-                          <td>{moment(transferencia.dataTransferencia).format('DD/MM/YYYY')}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="1">Nenhuma transferência encontrada.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Tabela Valor */}
-              <div className="table-column">
-                <table className="table table-data-transfer">
-                  <thead>
-                    <tr>
-                      <th>Valor</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.isArray(transferenciasPaginadas) ? (
-                      transferenciasPaginadas.map((transferencia) => (
-                        <tr key={transferencia.id}>
-                          <td>{transferencia.valor}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="1">Nenhuma transferência encontrada.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Tabela Tipo */}
-              <div className="table-column">
-                <table className="table table-data-transfer">
-                  <thead>
-                    <tr>
-                      <th>Tipo</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.isArray(transferenciasPaginadas) ? (
-                      transferenciasPaginadas.map((transferencia) => (
-                        <tr key={transferencia.id}>
-                          <td>{transferencia.tipo}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="1">Nenhuma transferência encontrada.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Tabela Nome do Operador */}
-              <div className="table-column">
-                <table className="table table-data-transfer">
-                  <thead>
-                    <tr>
-                      <th>Nome do Operador</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.isArray(transferenciasPaginadas) ? (
-                      transferenciasPaginadas.map((transferencia) => (
-                        <tr key={transferencia.id}>
-                          <td className={transferencia.nomeOperadorTransacao ? '' : 'empty-cell'}>
-                            {transferencia.nomeOperadorTransacao}
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="1">Nenhuma transferência encontrada.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="pagination">
-
-              <button onClick={() => this.handlePageChange(currentPage - 2)}
-                disabled={currentPage <= 1}>
-                ⮜⮜
-              </button>
-
-              <button onClick={() => this.handlePageChange(currentPage - 1)}
-                disabled={currentPage === 0}>
-                ⮜
-              </button>
-
-              {/* Exibir informações da página */}
-              <p>
-                Página: {currentPage + 1} de {totalPages}
-              </p>
-
-              <button onClick={() => this.handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages - 1 || totalPages === 0}>
-                ➤
-              </button>
-
-              <button onClick={() => this.handlePageChange(currentPage + 2)}
-                disabled={currentPage >= totalPages - 2}>
-                ➤➤
-              </button>
-            </div>
+            <nav className="navbar">
+              <img src={logo} alt="Logo" className="navbar-logo" />
+              <a href="http://localhost:3000/" className="logo" >Bank Dashboard</a>
+            </nav>
           </header>
+
+          <header className="projects">
+            <div className="heros">
+              <div>
+                <label htmlFor="operatorName">Nome Operador Transacionado:</label>
+                <input
+                  type="text"
+                  id="operatorName"
+                  name="operatorName"
+                  value={operatorName}
+                  onChange={this.handleInputChange}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="startDate">Data de Início:</label>
+                <input
+                  type="date"
+                  id="startDate"
+                  name="startDate"
+                  value={startDate}
+                  onChange={this.handleInputChange}
+                  placeholder="dd/MM/yyyy"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="endDate">Data de Fim:</label>
+                <input
+                  type="date"
+                  id="endDate"
+                  name="endDate"
+                  value={endDate}
+                  onChange={this.handleInputChange}
+                  placeholder="dd/MM/yyyy"
+                />
+              </div>
+
+              <button onClick={this.handleSearch}>Pesquisar</button>
+
+              <div className='bank'>
+                <p>Saldo Total: {saldoTotal} R$</p>
+                <p>Saldo no Período: {saldoPeriodo} R$</p>
+              </div>
+            </div>
+
+          </header>
+          <div classname="project">
+            <div className="container">
+              {/* Renderização das tabelas */}
+              <div className="table-container">
+                <div className="table-column">
+                  <table className="table table-data-transfer">
+                    <thead>
+                      <tr>
+                        <th>Transferencia ID</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.isArray(transferenciasPaginadas) ? (
+                        transferenciasPaginadas.map((transferencia) => (
+                          <tr key={transferencia.id}>
+                            <td>{transferencia.id}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="1">Nenhuma transferência encontrada.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="table-column">
+                  <table className="table table-data-transfer">
+                    <thead>
+                      <tr>
+                        <th>Data de Transferência</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.isArray(transferenciasPaginadas) ? (
+                        transferenciasPaginadas.map((transferencia) => (
+                          <tr key={transferencia.id}>
+                            <td>{moment(transferencia.dataTransferencia).format('DD/MM/YYYY')}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="1">Nenhuma transferência encontrada.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Tabela Valor */}
+                <div className="table-column">
+                  <table className="table table-data-transfer">
+                    <thead>
+                      <tr>
+                        <th>Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.isArray(transferenciasPaginadas) ? (
+                        transferenciasPaginadas.map((transferencia) => (
+                          <tr key={transferencia.id}>
+                            <td>{transferencia.valor}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="1">Nenhuma transferência encontrada.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Tabela Tipo */}
+                <div className="table-column">
+                  <table className="table table-data-transfer">
+                    <thead>
+                      <tr>
+                        <th>Tipo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.isArray(transferenciasPaginadas) ? (
+                        transferenciasPaginadas.map((transferencia) => (
+                          <tr key={transferencia.id}>
+                            <td>{transferencia.tipo}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="1">Nenhuma transferência encontrada.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Tabela Nome do Operador */}
+                <div className="table-column">
+                  <table className="table table-data-transfer">
+                    <thead>
+                      <tr>
+                        <th>Nome do Operador</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.isArray(transferenciasPaginadas) ? (
+                        transferenciasPaginadas.map((transferencia) => (
+                          <tr key={transferencia.id}>
+                            <td className={transferencia.nomeOperadorTransacao ? '' : 'empty-cell'}>
+                              {transferencia.nomeOperadorTransacao}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="1">Nenhuma transferência encontrada.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+              <div className="pagination">
+
+                <button onClick={() => this.handlePageChange(currentPage - 2)}
+                  disabled={currentPage <= 1}>
+                  ⮜⮜
+                </button>
+
+                <button onClick={() => this.handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 0}>
+                  ⮜
+                </button>
+
+                {/* Exibir informações da página */}
+                <p>
+                  Página: {currentPage + 1} de {totalPages}
+                </p>
+
+                <button onClick={() => this.handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages - 1 || totalPages === 0}>
+                  ➤
+                </button>
+
+                <button onClick={() => this.handlePageChange(currentPage + 2)}
+                  disabled={currentPage >= totalPages - 2}>
+                  ➤➤
+                </button>
+              </div>
+
+            </div>
+          </div>
+
         </div>
         <div className="App">
           <header className="App-header">

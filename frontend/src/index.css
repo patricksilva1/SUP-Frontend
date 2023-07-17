@@ -29,7 +29,7 @@ code {
 }
 
 .App-header button {
-  margin-top: 10px;
+  margin-top: 30px;
 }
 
 /* Botoes */
@@ -103,7 +103,7 @@ button:focus {
 }
 
 .pagination {
-  margin-top: 120px;
+  margin-top: 70px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -136,4 +136,82 @@ button:focus {
 .bank p {
   margin: 0 10px;
   position: sticky;
+}
+
+/* NavBar */
+.navbar {
+  align-items: center;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, .09);
+  display: flex;
+  font-size: 2rem;
+  height: 2.5rem;
+  justify-content: flex-start;
+  left: 0;
+  padding: 25px 40px 25px 50px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 200;
+}
+
+/* Logo */
+.logo {
+  color: #2d2e32;
+  cursor: pointer;
+}
+
+/* Navbar */
+.navbar a {
+  text-decoration: none;
+}
+
+.navbar-logo {
+  height: 60px;
+  margin-right: -52px;
+}
+
+.navbar-title {
+  margin: 0;
+}
+
+/* Hero */
+.heros {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  height: 9rem;
+  justify-content: center;
+  position: relative;
+  margin-top: 7.5rem;
+}
+
+.heros>div {
+  margin-bottom: 10px;
+}
+
+.heros label {
+  margin-right: 5px;
+}
+
+.heros input {
+  padding: 5px;
+}
+
+/* Container */
+.container {
+  margin: 0 auto;
+  max-width: 107rem;
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+  display: table;
+}
+
+.project {
+  background-color: #f9f9f9;
+  padding: 5rem 0;
+}
+
+.a {
+  text-decoration: none;
 }
