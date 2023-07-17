@@ -81,11 +81,6 @@ class App extends React.Component {
     };
   }
 
-  // handleStartDateChange = (date) => {
-  //   this.setState({
-  //     startDate: date,
-  //   });
-  // };
   handleStartDateChange = (date) => {
     const formattedDate = moment(date).format('DD/MM/YYYY');
     this.setState({
@@ -93,20 +88,12 @@ class App extends React.Component {
     });
   };
 
-
-
-  // handleEndDateChange = (date) => {
-  //   this.setState({
-  //     endDate: date,
-  //   });
-  // };
   handleEndDateChange = (date) => {
     const formattedDate = moment(date).format('DD/MM/YYYY');
     this.setState({
       endDate: formattedDate,
     });
   };
-
 
   handleInputChange = (event) => {
     const target = event.target;
@@ -156,7 +143,7 @@ class App extends React.Component {
           console.error(error);
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por período.' });
         });
-    } else if (!startDate || !endDate) {
+    }  if (!startDate || !endDate) {
       axios
         .get('http://localhost:8080/api/v1/transfers/operador', {
           params: {
@@ -173,7 +160,7 @@ class App extends React.Component {
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por operador.' });
         });
     }
-    else {
+   else {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
           params: {
@@ -382,6 +369,7 @@ class App extends React.Component {
   };
 
   // a****************************************************************
+  // Handle Methods
 
   handlePageChange = (page) => {
     this.setState({ currentPage: page }, () => {
@@ -412,8 +400,6 @@ class App extends React.Component {
 
     return (
       <ErrorBoundary>
-
-
         <div className="App">
           <header className="App-header">
             <h1>Bank Dashboard</h1>
@@ -438,15 +424,8 @@ class App extends React.Component {
                 onChange={this.handleInputChange}
                 placeholder="dd/MM/yyyy" // Placeholder formatado
               />
-              {/* <input
-                type="date"
-                id="startDate"
-                name="startDate"
-                value={moment(startDate, 'DD/MM/YYYY').format('YYYY-MM-DD')}
-                onChange={this.handleStartDateChange}
-                placeholder="dd/MM/yyyy"
-              /> */}
             </div>
+
             <div>
               <label htmlFor="endDate">Data de Fim:</label>
               <input
@@ -457,14 +436,6 @@ class App extends React.Component {
                 onChange={this.handleInputChange}
                 placeholder="dd/MM/yyyy" // Placeholder Formatado
               />
-              {/* <input
-                type="date"
-                id="endDate"
-                name="endDate"
-                value={moment(endDate, 'DD/MM/YYYY').format('YYYY-MM-DD')}
-                onChange={this.handleEndDateChange}
-                placeholder="dd/MM/yyyy"
-              /> */}
             </div>
 
             <button onClick={this.handleSearch}>Pesquisar</button>
@@ -595,40 +566,6 @@ class App extends React.Component {
                   </tbody>
                 </table>
               </div>
-
-              {/* <div className="table-column">
-              <table className="table table-data-transfer">
-                <thead>
-                  <tr>
-                    <th>Saldo Atual</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transferenciasPaginadas.map((transferencia) => (
-                    <tr key={transferencia.id}>
-                      <td>{transferencia.saldoAtual}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div> */}
-
-              {/* <div className="table-column">
-              <table className="table table-data-transfer">
-                <thead>
-                  <tr>
-                    <th>Conta Destino</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transferenciasPaginadas.map((transferencia) => (
-                    <tr key={transferencia.id}>
-                      <td>{transferencia.contaDestino}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div> */}
             </div>
 
             <div className="pagination">

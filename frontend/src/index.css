@@ -49,6 +49,7 @@ button:focus {
   color: #fff;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
+
 .table-container {
   justify-content: center;
   gap: 20px;
@@ -109,10 +110,12 @@ button:focus {
   margin: 0 5px;
   transition: box-shadow 0.3s ease;
 }
+
 .pagination button:hover,
 .pagination button:focus {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
+
 .pagination p {
   margin: 0 10px;
 }
