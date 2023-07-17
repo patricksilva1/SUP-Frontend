@@ -12,18 +12,15 @@ class ErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Atualiza o state para que a próxima renderização mostre a UI de fallback
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    // Você também pode registrar o erro em um serviço de log de erros aqui
     console.error(error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      // Você pode retornar qualquer UI de fallback desejada
       return <h1>Algo deu errado. Por favor, tente novamente mais tarde.</h1>;
     }
 
@@ -35,14 +32,23 @@ class App extends React.Component {
 
   handlePrintTransfers = () => {
     const { transferencias, saldoTotal, saldoPeriodo } = this.state;
-  
+
     // Criar um novo objeto jsPDF
     const doc = new jsPDF();
-  
+
+    // Adicionar texto do seu aplicativo
+    const appText = 'Supera Bank Application';
+    const appTextSize = 20;
+    const appTextX = 10;
+    const appTextY = 10;
+
+    doc.setFontSize(appTextSize);
+    doc.text(appText, appTextX, appTextY);
+
     // Definir o título e as colunas da tabela no PDF
     const tableColumns = ['Transferencia ID', 'Data de Transferência', 'Valor', 'Tipo', 'Nome do Operador - Destino'];
     const tableData = [];
-  
+
     // Preencher os dados da tabela com as transferências
     transferencias.forEach((transferencia) => {
       const rowData = [
@@ -54,14 +60,14 @@ class App extends React.Component {
       ];
       tableData.push(rowData);
     });
-  
+
     // Adicionar a tabela ao PDF
     doc.autoTable(tableColumns, tableData);
-  
+
     // Adicionar os campos de Saldo Total e Saldo no Período
-    doc.text(`Saldo Total: ${saldoTotal} R$`, 14, doc.lastAutoTable.finalY + 10);
-    doc.text(`Saldo no Período: ${saldoPeriodo} R$`, 14, doc.lastAutoTable.finalY + 20);
-  
+    doc.text(`Saldo Total: ${saldoTotal} R$`, 5, doc.lastAutoTable.finalY + 10);
+    doc.text(`Saldo no Período: ${saldoPeriodo} R$`, 5, doc.lastAutoTable.finalY + 20);
+
     // Salvar o arquivo PDF
     doc.save('transferencias.pdf');
   };
@@ -143,7 +149,7 @@ class App extends React.Component {
           console.error(error);
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por período.' });
         });
-    }  if (!startDate || !endDate) {
+    } else if (!startDate || !endDate) {
       axios
         .get('http://localhost:8080/api/v1/transfers/operador', {
           params: {
@@ -159,8 +165,23 @@ class App extends React.Component {
           console.error(error);
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por operador.' });
         });
-    }
-   else {
+      // Obter Saldo Total por Nome
+      axios
+        .get('http://localhost:8080/api/v1/transfers/saldo-total', {
+          params: {
+            nome: operatorName,
+          },
+        })
+        .then((saldoTotalResponse) => {
+          const saldoTotal = saldoTotalResponse.data;
+          console.log(saldoTotal);
+          this.setState({ saldoTotal, errorMessage: '' });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo total.' });
+        });
+    } else if (startDate && endDate && operatorName) {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
           params: {
@@ -180,196 +201,79 @@ class App extends React.Component {
             errorMessage: 'Ocorreu um erro ao buscar as transferências por período e operador.',
           });
         });
+      axios
+        .get('http://localhost:8080/api/v1/transfers/saldo-total', {
+          params: {
+            nome: operatorName,
+          },
+        })
+        .then((saldoTotalResponse) => {
+          const saldoTotal = saldoTotalResponse.data;
+          console.log(saldoTotal);
+          this.setState({ saldoTotal, errorMessage: '' });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo total.' });
+        });
+      axios
+        .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
+          params: {
+            dataInicio: formattedStartDate,
+            dataFim: formattedEndDate,
+            nome: operatorName,
+          },
+        })
+        .then((saldoPeriodoResponse) => {
+          const saldoPeriodo = saldoPeriodoResponse.data;
+          console.log(saldoPeriodo);
+          this.setState({ saldoPeriodo, errorMessage: '' });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo do período.' });
+        });
+    }
+    else if (operatorName) {
+      // Obter Saldo Total por Nome
+      axios
+        .get('http://localhost:8080/api/v1/transfers/saldo-total', {
+          params: {
+            nome: operatorName,
+          },
+        })
+        .then((saldoTotalResponse) => {
+          const saldoTotal = saldoTotalResponse.data;
+          console.log(saldoTotal);
+          this.setState({ saldoTotal, errorMessage: '' });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo total.' });
+        });
     }
 
-    // Obter Saldo Total por Nome
-    axios
-      .get('http://localhost:8080/api/v1/transfers/saldo-total', {
-        params: {
-          nome: operatorName,
-        },
-      })
-      .then((saldoTotalResponse) => {
-        const saldoTotal = saldoTotalResponse.data;
-        console.log(saldoTotal);
-        this.setState({ saldoTotal, errorMessage: '' });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo total.' });
-      });
-
-    // Obter Saldo no Período por Nome
-    axios
-      .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
-        params: {
-          dataInicio: formattedStartDate,
-          dataFim: formattedEndDate,
-          nome: operatorName,
-        },
-      })
-      .then((saldoPeriodoResponse) => {
-        const saldoPeriodo = saldoPeriodoResponse.data;
-        console.log(saldoPeriodo);
-        this.setState({ saldoPeriodo, errorMessage: '' });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo do período.' });
-      });
-  };
-
-  handleSearchByOperator = () => {
-    const { operatorName } = this.state;
-
-    // Fazer a solicitação para a API de backend
-    axios
-      .get('http://localhost:8080/api/v1/transfers/operador', {
-        params: {
-          nomeOperador: operatorName,
-        },
-      })
-      .then((response) => {
-        const transferencias = response.data;
-        console.log(transferencias);
-        this.setState({ transferencias, errorMessage: '' });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por operador.' });
-      });
-  };
-
-  handleSearchByPeriodAndOperator = () => {
-    const { startDate, endDate, operatorName } = this.state;
-    const formattedStartDate = moment(startDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-    const formattedEndDate = moment(endDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-
-    // Fazer a solicitação para a API de backend
-    axios
-      .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
-        params: {
-          dataInicio: formattedStartDate,
-          dataFim: formattedEndDate,
-          nomeOperador: operatorName,
-        },
-      })
-      .then((response) => {
-        const transferencias = response.data;
-        console.log(transferencias);
-        this.setState({ transferencias, errorMessage: '' });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({
-          errorMessage: 'Ocorreu um erro ao buscar as transferências por período e operador.',
+    else if (startDate && endDate && operatorName) {
+      // Obter Saldo no Período por Nome
+      axios
+        .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
+          params: {
+            dataInicio: formattedStartDate,
+            dataFim: formattedEndDate,
+            nome: operatorName,
+          },
+        })
+        .then((saldoPeriodoResponse) => {
+          const saldoPeriodo = saldoPeriodoResponse.data;
+          console.log(saldoPeriodo);
+          this.setState({ saldoPeriodo, errorMessage: '' });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo do período.' });
         });
-      });
+    }
   };
-
-  handleGetTransferenciasPaginadas = (pagina, tamanhoPagina) => {
-    axios
-      .get('http://localhost:8080/api/v1/transfers/paginadas', {
-        params: {
-          pagina,
-          tamanhoPagina,
-        },
-      })
-      .then((response) => {
-        const transferencias = response.data;
-        console.log(transferencias);
-        this.setState({ transferencias, errorMessage: '' });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências paginadas.' });
-      });
-  };
-
-
-
-  // a****************************************************************
-
-  handleSearchTransactionsByPeriodAndName = () => {
-    const { startDate, endDate, operatorName } = this.state;
-
-    axios
-      .get('http://localhost:8080/api/v1/transfers/transacoes', {
-        params: {
-          dataInicio: startDate,
-          dataFim: endDate,
-          nome: operatorName,
-        },
-      })
-      .then((response) => {
-        const transacoes = response.data;
-        console.log(transacoes);
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({
-          errorMessage: 'Ocorreu um erro ao buscar as transações por período e nome.',
-        });
-      });
-  };
-
-  handleGetTotalBalanceByName = () => {
-    const { operatorName } = this.state;
-
-    axios
-      .get('http://localhost:8080/api/v1/transfers/saldo-total', {
-        params: {
-          nome: operatorName,
-        },
-      })
-      .then((response) => {
-        const saldoTotal = response.data;
-        console.log(saldoTotal);
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo total.' });
-      });
-  };
-  handleGetBalanceDuringPeriodByName = () => {
-    const { startDate, endDate, operatorName } = this.state;
-
-    axios
-      .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
-        params: {
-          dataInicio: startDate,
-          dataFim: endDate,
-          nome: operatorName,
-        },
-      })
-      .then((response) => {
-        const saldoPeriodo = response.data;
-        console.log(saldoPeriodo);
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo do período.' });
-      });
-  };
-
-  handleWithdraw = (idConta, valor) => {
-    axios
-      .post(`http://localhost:8080/api/v1/transfers/${idConta}/saque`, null, {
-        params: {
-          valor,
-        },
-      })
-      .then((response) => {
-        console.log('Saque realizado com sucesso');
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({ errorMessage: 'Ocorreu um erro ao realizar o saque.' });
-      });
-  };
-
-  // a****************************************************************
-  // Handle Methods
 
   handlePageChange = (page) => {
     this.setState({ currentPage: page }, () => {
@@ -546,7 +450,7 @@ class App extends React.Component {
                 <table className="table table-data-transfer">
                   <thead>
                     <tr>
-                      <th>Nome do Operador - Destino</th>
+                      <th>Nome do Operador</th>
                     </tr>
                   </thead>
                   <tbody>
