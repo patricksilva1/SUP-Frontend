@@ -31,6 +31,7 @@ class ErrorBoundary extends Component {
 
 class App extends React.Component {
 
+  // Imprimir Transferencias:
   handlePrintTransfers = () => {
     const { transferencias, saldoTotal, saldoPeriodo } = this.state;
 
@@ -112,12 +113,13 @@ class App extends React.Component {
     });
   };
 
+  // Eu resolvi colocar os handles no botao de pesquisa
   handleSearch = () => {
     const { startDate, endDate, operatorName } = this.state;
     const formattedStartDate = moment(startDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
     const formattedEndDate = moment(endDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
-    // Fazer a solicitação para a API de backend
+    // Se não tiver Datas nem Nome do Operador:
     if (!operatorName && !startDate && !endDate) {
       axios
         .get('http://localhost:8080/api/v1/transfers', {
@@ -133,7 +135,10 @@ class App extends React.Component {
           // Exibir uma mensagem de erro ao usuário
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências.' });
         });
-    } else if (!operatorName) {
+    } 
+    
+    //  Se não tiver Nome de Operador:
+    else if (!operatorName) {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo', {
           params: {
@@ -150,7 +155,10 @@ class App extends React.Component {
           console.error(error);
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por período.' });
         });
-    } else if (!startDate || !endDate) {
+    } 
+    
+    //  Se não tiver Datas mas tiver Nome do Operador:
+    else if (!startDate || !endDate) {
       axios
         .get('http://localhost:8080/api/v1/transfers/operador', {
           params: {
@@ -166,6 +174,26 @@ class App extends React.Component {
           console.error(error);
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar as transferências por operador.' });
         });
+
+      // Obter por saldo apenas por nome.
+      axios
+        .get('http://localhost:8080/api/v1/transfers/saldo-por-nome', {
+          params: {
+            dataInicio: formattedStartDate,
+            dataFim: formattedEndDate,
+            nomeOperador: operatorName,
+          },
+        })
+        .then((saldoPeriodoResponse) => {
+          const saldoPeriodo = saldoPeriodoResponse.data;
+          console.log(saldoPeriodo);
+          this.setState({ saldoPeriodo, errorMessage: '' });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo do período.' });
+        });
+
       // Obter Saldo Total por Nome
       axios
         .get('http://localhost:8080/api/v1/transfers/saldo-total', {
@@ -182,7 +210,10 @@ class App extends React.Component {
           console.error(error);
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo total.' });
         });
-    } else if (startDate && endDate && operatorName) {
+    }
+
+    // Se tiver Nome do Operador e Datas:
+    else if (startDate && endDate && operatorName) {
       axios
         .get('http://localhost:8080/api/v1/transfers/periodo-operador', {
           params: {
@@ -202,6 +233,7 @@ class App extends React.Component {
             errorMessage: 'Ocorreu um erro ao buscar as transferências por período e operador.',
           });
         });
+        
       axios
         .get('http://localhost:8080/api/v1/transfers/saldo-total', {
           params: {
@@ -217,6 +249,7 @@ class App extends React.Component {
           console.error(error);
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo total.' });
         });
+
       axios
         .get('http://localhost:8080/api/v1/transfers/saldo-periodo', {
           params: {
@@ -235,6 +268,8 @@ class App extends React.Component {
           this.setState({ errorMessage: 'Ocorreu um erro ao buscar o saldo do período.' });
         });
     }
+
+    //  Se tiver Nome do Operador e nao tiver Datas:
     else if (operatorName) {
       // Obter Saldo Total por Nome
       axios
@@ -254,6 +289,7 @@ class App extends React.Component {
         });
     }
 
+    // Se tiver Nome de Operador e Datas:
     else if (startDate && endDate && operatorName) {
       // Obter Saldo no Período por Nome
       axios
@@ -290,6 +326,7 @@ class App extends React.Component {
     });
   };
 
+  // Renderizar
   render() {
     const { startDate, endDate, operatorName, transferencias, currentPage, pageSize, saldoTotal, saldoPeriodo } = this.state;
 
@@ -313,6 +350,7 @@ class App extends React.Component {
             </nav>
           </header>
 
+          {/* Campo de Operador Transacionado */}
           <header className="projects">
             <div className="heros">
               <div>
@@ -326,6 +364,7 @@ class App extends React.Component {
                 />
               </div>
 
+              {/* Campo de Data Inicial */}
               <div>
                 <label htmlFor="startDate">Data de Início:</label>
                 <input
@@ -338,6 +377,7 @@ class App extends React.Component {
                 />
               </div>
 
+              {/* Campo de Data Fim */}
               <div>
                 <label htmlFor="endDate">Data de Fim:</label>
                 <input
@@ -350,6 +390,7 @@ class App extends React.Component {
                 />
               </div>
 
+              {/* Pesquisar */}
               <button onClick={this.handleSearch}>Pesquisar</button>
 
               <div className='bank'>
@@ -361,7 +402,10 @@ class App extends React.Component {
           </header>
           <div classname="project">
             <div className="container">
+
               {/* Renderização das tabelas */}
+
+              {/* Transferencia ID */}
               <div className="table-container">
                 <div className="table-column">
                   <table className="table table-data-transfer">
@@ -386,6 +430,7 @@ class App extends React.Component {
                   </table>
                 </div>
 
+                {/* Tabela de Transferencia */}
                 <div className="table-column">
                   <table className="table table-data-transfer">
                     <thead>
@@ -482,16 +527,17 @@ class App extends React.Component {
                     </tbody>
                   </table>
                 </div>
-
               </div>
 
               <div className="pagination">
 
+                {/* Voltar 2x */}
                 <button onClick={() => this.handlePageChange(currentPage - 2)}
                   disabled={currentPage <= 1}>
                   ⮜⮜
                 </button>
 
+                {/* Voltar */}
                 <button onClick={() => this.handlePageChange(currentPage - 1)}
                   disabled={currentPage === 0}>
                   ⮜
@@ -502,26 +548,25 @@ class App extends React.Component {
                   Página: {currentPage + 1} de {totalPages}
                 </p>
 
+                {/* Avançar */}
                 <button onClick={() => this.handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages - 1 || totalPages === 0}>
                   ➤
                 </button>
 
+                {/* Avançar 2x */}
                 <button onClick={() => this.handlePageChange(currentPage + 2)}
                   disabled={currentPage >= totalPages - 2}>
                   ➤➤
                 </button>
               </div>
-
             </div>
           </div>
 
         </div>
         <div className="App">
           <header className="App-header">
-            {/* ... */}
             <button onClick={this.handlePrintTransfers}>Imprimir Transferências</button>
-            {/* ... */}
           </header>
         </div>
       </ErrorBoundary>
