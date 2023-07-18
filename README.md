@@ -1,6 +1,6 @@
 # SUP-Frontend
 
-Dependencias:
+Instale essas Dependencias:
 
 `npm install axios`
 
@@ -8,5 +8,3 @@ Dependencias:
 
 `npm install jspdf`
 
-Tests:
-npm install --save-dev jest enzyme enzyme-adapter-react-17
