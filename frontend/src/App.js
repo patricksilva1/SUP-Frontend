@@ -394,8 +394,8 @@ class App extends React.Component {
               <button onClick={this.handleSearch}>Pesquisar</button>
 
               <div className='bank'>
-                <p>Saldo Total: {saldoTotal} R$</p>
-                <p>Saldo no Período: {saldoPeriodo} R$</p>
+                <p>Saldo Total: R$ {saldoTotal}</p>
+                <p>Saldo no Período: R$ {saldoPeriodo}</p>
               </div>
             </div>
 
